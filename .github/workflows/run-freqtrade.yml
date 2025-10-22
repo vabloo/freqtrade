@@ -30,7 +30,20 @@ jobs:
       - name: Prepare config
         run: |
           mkdir -p user_data/config
-          freqtrade new-config --config user_data/config/config.json --preset minimal
+          echo '{
+            "max_open_trades": 1,
+            "stake_currency": "USDT",
+            "stake_amount": 100,
+            "dry_run": true,
+            "timeframe": "1h",
+            "dataformat_ohlcv": "json",
+            "exchange": {
+              "name": "binance",
+              "key": "",
+              "secret": "",
+              "pair_whitelist": ["BTC/USDT", "ETH/USDT"]
+            }
+          }' > user_data/config/config.json
 
       - name: Run backtest
         run: |
