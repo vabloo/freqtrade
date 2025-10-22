@@ -1,7 +1,7 @@
 name: Run Freqtrade Backtest
 
 on:
-  workflow_dispatch:  # allows manual trigger
+  workflow_dispatch:
   push:
     branches:
       - develop
@@ -30,7 +30,7 @@ jobs:
       - name: Prepare config
         run: |
           mkdir -p user_data/config
-          cp config_examples/config.json user_data/config/config.json
+          freqtrade new-config --config user_data/config/config.json --preset minimal
 
       - name: Run backtest
         run: |
