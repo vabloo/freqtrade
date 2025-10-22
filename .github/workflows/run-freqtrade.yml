@@ -1,0 +1,47 @@
+name: Run Freqtrade Backtest
+
+on:
+  workflow_dispatch:  # allows manual trigger
+  push:
+    branches:
+      - develop
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libatlas-base-dev
+          pip install --upgrade pip
+          pip install -e .
+          pip install pandas ta
+
+      - name: Prepare config
+        run: |
+          mkdir -p user_data/config
+          cp config_examples/config.json user_data/config/config.json
+
+      - name: Run backtest
+        run: |
+          freqtrade backtesting \
+            --config user_data/config/config.json \
+            --strategy SampleStrategy \
+            --timerange 20230101-20230701 \
+            --export trades
+
+      - name: Upload backtest results
+        uses: actions/upload-artifact@v4
+        with:
+          name: backtest-results
+          path: user_data/backtest_results/
